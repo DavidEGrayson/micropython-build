@@ -26,11 +26,12 @@ let
       hash = "sha256-Dc40uLyLQBfs8Elku8g+sTz/OETsFNqLqp/xnbF/rn4=";
     };
 
-    # 2024-12-14 - this one is not working
-    # patches = [ ./mpy-traceback.patch ];
+    patches = [
+      ./mpy-traceback.patch
 
-    # Change the Pico firmware to use a 1MB USB Mass Storage filesystem.
-    patches = [ ./pico-1mb-mass-storage.patch ];
+       # Change the Pico firmware to use a 1MB USB Mass Storage filesystem.
+      ./pico-1mb-mass-storage.patch
+    ];
 
     # After changing the MicroPython version above, run
     # 'git describe --tags --match=v*' to get the new values for these:

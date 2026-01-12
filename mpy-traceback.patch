@@ -1,6 +1,6 @@
-From e7a799e31c0c01bfe9a2972fa456f80d4dc987b5 Mon Sep 17 00:00:00 2001
+From 277571751a0e2963bb81ccd663e585f52a5f2da6 Mon Sep 17 00:00:00 2001
 From: "David (Pololu)" <dev-david@pololu.com>
-Date: Tue, 11 Apr 2023 16:40:05 -0700
+Date: Mon, 12 Jan 2026 10:18:16 -0800
 Subject: [PATCH] py/modsys.c: Add sys._exc_traceback.
 
 This makes it easier to provide custom formatting of exception
@@ -15,14 +15,14 @@ Signed-off-by: David (Pololu) <dev-david@pololu.com>
  1 file changed, 19 insertions(+)
 
 diff --git a/py/modsys.c b/py/modsys.c
-index 35af761a08f..ab03aff95b7 100644
+index 3dae92681..8c15a39e8 100644
 --- a/py/modsys.c
 +++ b/py/modsys.c
-@@ -150,6 +150,24 @@ STATIC mp_obj_t mp_sys_print_exception(size_t n_args, const mp_obj_t *args) {
+@@ -219,6 +219,24 @@ static mp_obj_t mp_sys_print_exception(size_t n_args, const mp_obj_t *args) {
  }
  MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_sys_print_exception_obj, 1, 2, mp_sys_print_exception);
  
-+STATIC mp_obj_t mp_sys_exc_traceback(mp_obj_t exc) {
++static mp_obj_t mp_sys_exc_traceback(mp_obj_t exc) {
 +    if (!mp_obj_is_exception_instance(exc)) {
 +        mp_raise_TypeError(MP_ERROR_TEXT("not an exception"));
 +    }
@@ -38,12 +38,12 @@ index 35af761a08f..ab03aff95b7 100644
 +    }
 +    return obj;
 +}
-+STATIC MP_DEFINE_CONST_FUN_OBJ_1(mp_sys_exc_traceback_obj, mp_sys_exc_traceback);
++static MP_DEFINE_CONST_FUN_OBJ_1(mp_sys_exc_traceback_obj, mp_sys_exc_traceback);
 +
  #if MICROPY_PY_SYS_EXC_INFO
- STATIC mp_obj_t mp_sys_exc_info(void) {
+ static mp_obj_t mp_sys_exc_info(void) {
      mp_obj_t cur_exc = MP_OBJ_FROM_PTR(MP_STATE_VM(cur_exception));
-@@ -277,6 +295,7 @@ STATIC const mp_rom_map_elem_t mp_module_sys_globals_table[] = {
+@@ -373,6 +391,7 @@ static const mp_rom_map_elem_t mp_module_sys_globals_table[] = {
       */
  
      { MP_ROM_QSTR(MP_QSTR_print_exception), MP_ROM_PTR(&mp_sys_print_exception_obj) },
@@ -51,3 +51,6 @@ index 35af761a08f..ab03aff95b7 100644
      #if MICROPY_PY_SYS_ATEXIT
      { MP_ROM_QSTR(MP_QSTR_atexit), MP_ROM_PTR(&mp_sys_atexit_obj) },
      #endif
+-- 
+2.43.0
+
