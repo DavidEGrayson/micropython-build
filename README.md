@@ -8,6 +8,7 @@ firmware images for the 3pi+ 2040 Robot and the Zumo 2040 Robot.
 To build a combined UF2 file that contains both MicroPython (compiled from source)
 and a filesystem with Pololu example code, install [Nix] and [Git] on a Linux machine,
 then navigate to this directory and run one of the following:
+- `./build.sh -A pico`
 - `./build.sh -A pololu-3pi-2040-robot`
 - `./build.sh -A pololu-zumo-2040-robot`
 

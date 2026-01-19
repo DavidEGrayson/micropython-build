@@ -31,7 +31,7 @@ File.open(output_filename, 'wb') do |output|
     block = block_map.fetch(offset)
     uf2_block = "UF2\n\x57\x51\x5D\x9E" +
       [UF2_FLAG_FAMILY_ID_PRESENT, address, block.size,
-      block_number, block_map.size, RP2040_FAMILY_ID].pack('<LLLLLL') +
+      block_number, block_map.size, RP2040_FAMILY_ID].pack('VVVVVV') +
       block.ljust(476, "\x00") + "\x30\x6F\xB1\x0A"
     output.write uf2_block
   end

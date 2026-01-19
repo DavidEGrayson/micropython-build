@@ -2,7 +2,7 @@ let
 
   # This date is used to identify releases.  It gets baked into the filenames,
   # file system timestamps, and `sys.version` in Python.
-  date = "2024-01-17";
+  date = "2026-01-20";
 
   short_date = (builtins.substring 2 2 date) +
     (builtins.substring 5 2 date) + (builtins.substring 8 2 date);
@@ -11,95 +11,60 @@ let
     builtins.throw "Be sure to use build.sh.  See README." else
     short_date + "-" + builtins.getEnv "COMMIT";
 
-  # nixos-23.11 branch, 2024-01-14
-  nixpkgs = import (fetchTarball
-    "https://github.com/NixOS/nixpkgs/archive/428544ae95eec077c7f823b422afae5f174dee4b.tar.gz");
-  pkgs = nixpkgs {};
+  # nixos-25.11 from 2026-01-08:
+  nixpkgs-version = "d351d0653aeb7877273920cd3e823994e7579b0b";
+  nixpkgs = fetchTarball {
+    name = "nixpkgs-${nixpkgs-version}";
+    url = "https://github.com/NixOS/nixpkgs/archive/${nixpkgs-version}.tar.gz";
+    sha256 = "049hhh8vny7nyd26dfv7i962jpg18xb5bg6cv126b8akw5grb0dg";
+  };
+  pkgs = import nixpkgs {};
 
-  micropython = {
-    src = pkgs.fetchFromGitHub {
-      owner = "micropython";
-      repo = "micropython";
-      rev = "9b8c64c9cee8203be167e6bffc74e186ae2fc958";  # 1.22.1 release
-      hash = "sha256-tGFXJW1RkUs/64Yatgg/1zZFPDQdu76uiMjNU8ebdvg=";
+  micropython = rec {
+    version = "v1.27.0";
+    src = pkgs.stdenv.mkDerivation {
+      name = "micropython-${version}";
+      outputHash = "sha256-IExtpwuiro4e/MCitJTYF4AzVYGTwtao23M9JiLLQic=";
+      outputHashAlgo = "sha256";
+      outputHashMode = "recursive";
+      builder = ./fetch_micropython.sh;
+      buildInputs = [ pkgs.git pkgs.cacert ];
+      submodules = ["lib/mbedtls" "lib/micropython-lib" "lib/pico-sdk" "lib/tinyusb"];
+      inherit version;
     };
-    patches = [ ./mpy-traceback.patch ];
 
-    # After changing the MicroPython version above, run
-    # 'git describe --tags --match=v*' to get the new values for these:
-    version = "v1.22.1";
-    version_suffix = ""; # e.g. "-47"
-  };
+    patches = [
+      ./mpy-traceback.patch
 
-  # Submodules of MicroPython needed by the RP2 port.
-  # We could try 'fetchSubmodules = true;' above but that would fetch lots of repositories
-  # we don't need, and it won't work with submodules that come from private URLs.
-  #
-  # After changing the MicroPython version, get the info you need to update this by
-  # running in the MicroPython repository:
-  #   cd ports/rp2 && make submodules && git submodule status --recursive | grep '^ '
-  lib_berkeley_db = pkgs.fetchFromGitHub {
-    owner = "pfalcon";
-    repo = "berkeley-db-1.xx";
-    rev = "35aaec4418ad78628a3b935885dd189d41ce779b";
-    hash = "sha256-XItxmpXXPgv11LcnL7dty6uq1JctGokHCU8UGG9ic04=";
+       # Change the Pico firmware to use a 1MB USB Mass Storage filesystem.
+      ./pico-1mb-mass-storage.patch
+    ];
   };
-  lib_mbedtls = pkgs.fetchFromGitHub {
-    owner = "ARMmbed";
-    repo = "mbedtls";
-    rev = "981743de6fcdbe672e482b6fd724d31d0a0d2476";
-    hash = "sha256-w5bJErCNRZLE8rHcuZlK3bOqel97gPPMKH2cPGUR6Zw=";
-  };
-  lib_micropython_lib = pkgs.fetchFromGitHub {
-    owner = "micropython";
-    repo = "micropython-lib";
-    rev = "7cdf70881519c73667efbc4a61a04d9c1a49babb";
-    hash = "sha256-XkBX+xMcaJsNs+VjNiZ8XNliMlsum8Gi+ndrxmVnM+M=";
-  };
-  lib_pico_sdk = pkgs.fetchFromGitHub {
-    owner = "raspberrypi";
-    repo = "pico-sdk";
-    rev = "6a7db34ff63345a7badec79ebea3aaef1712f374";
-    hash = "sha256-JNcxd86XNNiPkvipVFR3X255boMmq+YcuJXUP4JwInU=";
-  };
-  lib_tinyusb = pkgs.fetchFromGitHub {
-    owner = "hathach";
-    repo = "tinyusb";
-    rev = "1fdf29075d4e613eacfa881166015263797db0f6";
-    hash = "sha256-2u+ESlbKrr9dLq09Ictr6Ke/b8EHWxXKRxkLlbap+ss=";
-  };
+  # if rev is a commit instead of a tag, run "git describe --tags --match=v\*" to get this
+  mpy_git_tag = micropython.src.version;
 
   pico_sdk_patches = [ ];
 
-  ulab_src = pkgs.fetchFromGitHub {
+  ulab_src = pkgs.fetchFromGitHub rec {
     owner = "v923z";
     repo = "micropython-ulab";
-    rev = "9a1d03d90d9ae1c7f676941f618d0451030354f7";  # 2024-01-16
-    hash = "sha256-82Qd41jG2EBCjyGWXVO1tFpwY71mvOhQLazfl33M0pw=";
+    rev = "6.11.0";
+    name = "${repo}-${rev}";
+    hash = "sha256-KA26/ZAfjP1LvJ6OAdngc4NGD9aUHTgHU0y/Y7VX+Qs=";
   };
+  ulab_git_tag = ulab_src.rev;
 
-  # After changing the ulab version, look in its docs/ulab-change-log.md
-  # file to get the new version of this.
-  ulab_git_tag = "6.5.0" + "-" + builtins.substring 0 7 ulab_src.rev;
-
-  board = { board_name, file_name, MICROPY_BOARD, example_code, start_url }:
+  board = { board_name, file_name, MICROPY_BOARD, example_code, start_url, image_size_mb }:
     let
+      name_suffix = "-${file_name}-${mpy_git_tag}-${short_date}";
       base = pkgs.stdenv.mkDerivation rec {
         name = "micropython-base" + name_suffix;
-        name_suffix = "-${file_name}-${version}-${short_date}";
 
-        inherit MICROPY_BOARD date;
-        inherit (micropython) src patches version version_suffix;
+        inherit MICROPY_BOARD date mpy_git_tag ulab_src ulab_git_tag build_git_tag pico_sdk_patches;
+        inherit (micropython) src patches;
 
-        MICROPY_GIT_HASH = builtins.substring 0 9 src.rev;
-        MICROPY_GIT_TAG = version + version_suffix + "-g" + MICROPY_GIT_HASH;
-
-        inherit lib_berkeley_db lib_mbedtls lib_micropython_lib lib_pico_sdk pico_sdk_patches lib_tinyusb ulab_src ulab_git_tag;
-
-        MICROPY_BANNER_NAME_AND_VERSION =
-          "MicroPython ${MICROPY_GIT_TAG} build ${build_git_tag}; with ulab ${ulab_git_tag}";
-
-        buildInputs = [ pkgs.cmake pkgs.gcc pkgs.gcc-arm-embedded pkgs.python3 ];
+        buildInputs = with pkgs;
+          [ cmake gcc gcc-arm-embedded python3 picotool ];
 
         cmake_flags = "-DMICROPY_BOARD=${MICROPY_BOARD} " +
           #"-DCMAKE_BUILD_TYPE=Debug " +
@@ -108,10 +73,9 @@ let
 
         builder = ./base_builder.sh;
       };
-
       image = pkgs.stdenv.mkDerivation {
-        name = "micropython" + base.name_suffix;
-        inherit board_name start_url date base example_code;
+        name = "micropython" + name_suffix;
+        inherit board_name start_url date base example_code image_size_mb;
         bin2uf2 = ./bin2uf2.rb;
         buildInputs = [ pkgs.dosfstools pkgs.libfaketime pkgs.mtools pkgs.ruby ];
         builder = ./image_builder.sh;
@@ -119,10 +83,27 @@ let
     in image // { inherit base; };
 
 in rec {
+  inherit micropython;
+
+  pico = board {
+    board_name = "Raspberry Pi Pico";
+    file_name = "pico";
+    MICROPY_BOARD = "RPI_PICO";
+    image_size_mb = "2";
+    start_url = "https://www.raspberrypi.com/documentation/microcontrollers/pico-series.html";
+    example_code = pkgs.fetchFromGitHub {
+      owner = "pdg137";
+      repo = "pico-blink-demo";
+      rev = "92e56eb0498e78391e808220da9c21424685ba24";  # 2025-01-19
+      hash = "sha256-pS9YovP8Ar+GdclhSqLHXY71eEODQYdE0Mg111LrQ/o=";
+    };
+  };
+
   pololu-3pi-2040-robot = board {
     board_name = "Pololu 3pi+ 2040 Robot";
     file_name = "pololu-3pi-2040-robot";
     MICROPY_BOARD = "POLOLU_3PI_2040_ROBOT";
+    image_size_mb = "16";
     start_url = "https://www.pololu.com/3pi/start";
     example_code = pkgs.fetchFromGitHub {
       owner = "pololu";
@@ -136,6 +117,7 @@ in rec {
     board_name = "Pololu Zumo 2040 Robot";
     file_name = "pololu-zumo-2040-robot";
     MICROPY_BOARD = "POLOLU_ZUMO_2040_ROBOT";
+    image_size_mb = "16";
     start_url = "https://www.pololu.com/zumo/start";
     example_code = pkgs.fetchFromGitHub {
       owner = "pololu";

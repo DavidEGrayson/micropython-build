@@ -8,7 +8,7 @@ SOURCE_DATE_EPOCH=$(date -u --date=$date +%s)
 ruby -e 'print ARGF.read.b.ljust(1024*1024, "\xFF")' $base/*.bin > base.bin
 
 # Create a 15 MiB FAT file system.
-ruby -e 'print "\xFF"*15*1024*1024' > files.bin
+ruby -e 'print "\xFF"*('$image_size_mb'-1)*1024*1024' > files.bin
 faketime $date mkfs.fat -S 4096 -s 1 -f 1 -g 255/63 \
   -i 0 -n 'MicroPython' files.bin
 
