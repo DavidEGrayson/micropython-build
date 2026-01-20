@@ -1,13 +1,13 @@
-From 7bdb2682794378cace9fe126d3145038fe681eb7 Mon Sep 17 00:00:00 2001
+From caa5430c35ec318ee4c1af1fa2225a40bfa1da8e Mon Sep 17 00:00:00 2001
 From: "David (Pololu)" <dev-david@pololu.com>
 Date: Tue, 27 Jan 2026 10:56:36 -0800
-Subject: [PATCH] ports/rp2/clocks_extra: Set VREG like the SDK: needed for 200
+Subject: [PATCH] rp2/clocks_extra: Set VREG like the SDK does: needed for 200
  MHz.
 
 The RP2040 now supports running at 200 MHz, but the datasheet says
 that speed requires an elevated core supply of 1.15 V.  The SDK
 implements that in runtime_clocks_init, but we do not call that
-function becausde we override it in clocks_extra.c.
+function because we override it in clocks_extra.c.
 
 Signed-off-by: David (Pololu) <dev-david@pololu.com>
 ---
@@ -15,7 +15,7 @@ Signed-off-by: David (Pololu) <dev-david@pololu.com>
  1 file changed, 8 insertions(+)
 
 diff --git a/ports/rp2/clocks_extra.c b/ports/rp2/clocks_extra.c
-index ab3e6261f..b38452932 100644
+index ab3e6261f..db3643975 100644
 --- a/ports/rp2/clocks_extra.c
 +++ b/ports/rp2/clocks_extra.c
 @@ -14,6 +14,7 @@
@@ -30,12 +30,12 @@ index ab3e6261f..b38452932 100644
          XOSC_HZ,
          XOSC_HZ);
  
-+#if SYS_CLK_VREG_VOLTAGE_AUTO_ADJUST && defined(SYS_CLK_VREG_VOLTAGE_MIN)
++    #if SYS_CLK_VREG_VOLTAGE_AUTO_ADJUST && defined(SYS_CLK_VREG_VOLTAGE_MIN)
 +    if (vreg_get_voltage() < SYS_CLK_VREG_VOLTAGE_MIN) {
 +        vreg_set_voltage(SYS_CLK_VREG_VOLTAGE_MIN);
 +        busy_wait_at_least_cycles((uint32_t)((SYS_CLK_VREG_VOLTAGE_AUTO_ADJUST_DELAY_US * (uint64_t)XOSC_HZ) / 1000000));
 +    }
-+#endif
++    #endif
 +
      /// \tag::configure_clk_sys[]
      // CLK SYS = PLL SYS (usually) 125MHz / 1 = 125MHz

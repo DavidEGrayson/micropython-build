@@ -2,7 +2,7 @@ let
 
   # This date is used to identify releases.  It gets baked into the filenames,
   # file system timestamps, and `sys.version` in Python.
-  date = "2026-01-27";
+  date = "2026-02-10";
 
   short_date = (builtins.substring 2 2 date) +
     (builtins.substring 5 2 date) + (builtins.substring 8 2 date);
@@ -33,9 +33,12 @@ let
     };
 
     patches = [
+      # Expose traceback info for exceptions, making better error messages possible.
+      # https://github.com/micropython/micropython/pull/11244
       ./mpy-traceback.patch
 
       # ports/rp2/clocks_extra: Set VREG like the SDK: needed for 200 MHz.
+      # https://github.com/micropython/micropython/pull/18739
       ./mpy-vreg.patch
 
        # Change the Pico firmware to use a 1MB USB Mass Storage filesystem.
@@ -100,7 +103,7 @@ in rec {
     board_name = "Raspberry Pi Pico";
     file_name = "pico";
     MICROPY_BOARD = "RPI_PICO";
-    image_size_mb = "2";
+    image_size_mb = 2;
     start_url = "https://www.raspberrypi.com/documentation/microcontrollers/pico-series.html";
     example_code = pkgs.fetchFromGitHub rec {
       owner = "pololu";
@@ -115,13 +118,14 @@ in rec {
     board_name = "Pololu 3pi+ 2040 Robot";
     file_name = "pololu-3pi-2040-robot";
     MICROPY_BOARD = "POLOLU_3PI_2040_ROBOT";
-    image_size_mb = "16";
+    image_size_mb = 16;
     start_url = "https://www.pololu.com/3pi/start";
     example_code = pkgs.fetchFromGitHub rec {
       owner = "pololu";
       repo = "pololu-3pi-2040-robot";
-      rev = "6ddb719da080c21d9d1fb03e9f92007a12848f24";  # 2024-01-16
-      hash = "sha256-KcT2ChRHVFUHAa1h+B75kmP1wDPcyP1cxVF3IsEllxU=";
+      rev = "3eaee7e247a2acf4d2875c766ccaec36881e3ac0";  # 2026-02-09
+      name = "${repo}-${rev}";
+      hash = "sha256-Q63pdnYCjtHLaY0Z33+w0K+INq7i9IVQFTVny0TewSs=";
     };
   };
 
@@ -129,13 +133,14 @@ in rec {
     board_name = "Pololu Zumo 2040 Robot";
     file_name = "pololu-zumo-2040-robot";
     MICROPY_BOARD = "POLOLU_ZUMO_2040_ROBOT";
-    image_size_mb = "16";
+    image_size_mb = 16;
     start_url = "https://www.pololu.com/zumo/start";
     example_code = pkgs.fetchFromGitHub rec {
       owner = "pololu";
       repo = "zumo-2040-robot";
-      rev = "7bf996d4aa4180349538ab3c64980621930f6623";  # 2024-01-16
-      hash = "sha256-V+vFeZ82soP77lXwHTVZks7a2DvdbjIJckPnrViBgCE=";
+      rev = "a530761b51241c4bd23a95b4065b5d113c7f6a23";  # 2026-02-10
+      name = "${repo}-${rev}";
+      hash = "sha256-Dfe9zugGT43uN+gx3hXQaa2l/TR+S/YAaiDrdFpQOWA=";
     };
   };
 
