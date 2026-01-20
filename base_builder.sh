@@ -58,7 +58,7 @@ SOURCE_DATE_EPOCH=$(date -u --date=$date +%s)
 mkdir build
 cd build
 cmake ../src/ports/rp2 $cmake_flags
-cmake --build .
+cmake --build . -j
 
 cp --no-preserve=mode firmware.uf2 $out/$name.uf2
 cp --no-preserve=mode firmware.bin $out/$name.bin
