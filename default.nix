@@ -2,7 +2,7 @@ let
 
   # This date is used to identify releases.  It gets baked into the filenames,
   # file system timestamps, and `sys.version` in Python.
-  date = "2026-01-20";
+  date = "2026-01-27";
 
   short_date = (builtins.substring 2 2 date) +
     (builtins.substring 5 2 date) + (builtins.substring 8 2 date);
@@ -39,13 +39,13 @@ let
       ./mpy-vreg.patch
 
        # Change the Pico firmware to use a 1MB USB Mass Storage filesystem.
-      ./pico-1mb-mass-storage.patch
+      ./mpy-pico-1mb-mass-storage.patch
 
       # Add main_menu.py support.
-      ./main-menu-py.patch
+      ./mpy-main-menu-py.patch
 
       # Zumo is now supported in pico-sdk, so remove the temporary support.
-      ./supported-zumo.patch
+      ./mpy-supported-zumo.patch
     ];
   };
   # if rev is a commit instead of a tag, run "git describe --tags --match=v\*" to get this
@@ -53,7 +53,7 @@ let
 
   pico_sdk_patches = [
     # Increase default clock speed to the new spec
-    ./200mhz.patch
+    ./pico-sdk-200mhz.patch
   ];
 
   ulab_src = pkgs.fetchFromGitHub rec {

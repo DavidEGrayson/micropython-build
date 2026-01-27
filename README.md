@@ -35,7 +35,6 @@ git clone https://github.com/v923z/micropython-ulab ulab
 git clone https://github.com/micropython/micropython
 cd micropython
 
-# This part can go away after our changes are merged.
 cat ../micropython-build/mpy*.patch | patch -p1
 git submodule update --init lib/pico-sdk
 cat ../micropython-build/pico-sdk*.patch | (cd lib/pico-sdk && patch -p1)
