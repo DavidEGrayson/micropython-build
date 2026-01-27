@@ -21,16 +21,15 @@ let
   pkgs = import nixpkgs {};
 
   micropython = rec {
-    version = "v1.27.0";
-    src = pkgs.stdenv.mkDerivation {
-      name = "micropython-${version}";
+    src = pkgs.stdenv.mkDerivation rec {
+      name = "micropython-${rev}";
+      rev = "v1.27.0";
       outputHash = "sha256-IExtpwuiro4e/MCitJTYF4AzVYGTwtao23M9JiLLQic=";
       outputHashAlgo = "sha256";
       outputHashMode = "recursive";
       builder = ./fetch_micropython.sh;
       buildInputs = [ pkgs.git pkgs.cacert ];
       submodules = ["lib/mbedtls" "lib/micropython-lib" "lib/pico-sdk" "lib/tinyusb"];
-      inherit version;
     };
 
     patches = [
@@ -47,7 +46,7 @@ let
     ];
   };
   # if rev is a commit instead of a tag, run "git describe --tags --match=v\*" to get this
-  mpy_git_tag = micropython.src.version;
+  mpy_git_tag = micropython.src.rev;
 
   pico_sdk_patches = [
     # Increase default clock speed to the new spec
