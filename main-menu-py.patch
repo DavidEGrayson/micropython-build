@@ -1,0 +1,28 @@
+index 50946b0a5..c0fa4a764 100644
+--- a/ports/rp2/main.c
++++ b/ports/rp2/main.c
+@@ -33,6 +33,7 @@
+ #include "py/gc.h"
+ #include "py/mperrno.h"
+ #include "py/mphal.h"
++#include "py/frozenmod.h"
+ #include "extmod/modbluetooth.h"
+ #include "extmod/modmachine.h"
+ #include "extmod/modnetwork.h"
+@@ -224,7 +225,15 @@ int main(int argc, char **argv) {
+             goto soft_reset_exit;
+         }
+         if (pyexec_mode_kind == PYEXEC_MODE_FRIENDLY_REPL && ret != 0) {
+-            ret = pyexec_file_if_exists("main.py");
++            // run main_menu.py instead of main.py if it exists
++            // note: does not support frozen
++            if (mp_import_stat("main_menu.py") == MP_IMPORT_STAT_FILE) {
++                ret = pyexec_file("main_menu.py");
++            }
++            else {
++                ret = pyexec_file_if_exists("main.py");
++            }
++
+             if (ret & PYEXEC_FORCED_EXIT) {
+                 goto soft_reset_exit;
+             }

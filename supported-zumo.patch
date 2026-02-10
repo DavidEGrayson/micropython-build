@@ -1,0 +1,42 @@
+diff --git a/ports/rp2/boards/POLOLU_ZUMO_2040_ROBOT/mpconfigboard.cmake b/ports/rp2/boards/POLOLU_ZUMO_2040_ROBOT/mpconfigboard.cmake
+index 4ed917320..cbfed3e6a 100644
+--- a/ports/rp2/boards/POLOLU_ZUMO_2040_ROBOT/mpconfigboard.cmake
++++ b/ports/rp2/boards/POLOLU_ZUMO_2040_ROBOT/mpconfigboard.cmake
+@@ -1,5 +1 @@
+ # cmake file for Pololu Zumo 2040 Robot
+-
+-# This board is not yet in upstream pico-sdk, so define it here
+-# See also: https://github.com/raspberrypi/pico-sdk/tree/master/src/boards/include/boards
+-list(APPEND PICO_BOARD_HEADER_DIRS ${MICROPY_BOARD_DIR})
+diff --git a/ports/rp2/boards/POLOLU_ZUMO_2040_ROBOT/pololu_zumo_2040_robot.h b/ports/rp2/boards/POLOLU_ZUMO_2040_ROBOT/pololu_zumo_2040_robot.h
+deleted file mode 100644
+index 252cea981..000000000
+--- a/ports/rp2/boards/POLOLU_ZUMO_2040_ROBOT/pololu_zumo_2040_robot.h
++++ /dev/null
+@@ -1,26 +0,0 @@
+-/*
+- * Copyright (c) 2023 Raspberry Pi (Trading) Ltd.
+- *
+- * SPDX-License-Identifier: BSD-3-Clause
+- */
+-
+-// -----------------------------------------------------
+-// NOTE: THIS HEADER IS ALSO INCLUDED BY ASSEMBLER SO
+-//       SHOULD ONLY CONSIST OF PREPROCESSOR DIRECTIVES
+-// -----------------------------------------------------
+-
+-#ifndef _POLOLU_ZUMO_2040_ROBOT_H
+-#define _POLOLU_ZUMO_2040_ROBOT_H
+-
+-// For board detection
+-#define POLOLU_ZUMO_2040_ROBOT
+-
+-#define PICO_DEFAULT_LED_PIN 25
+-#define PICO_BOOT_STAGE2_CHOOSE_W25Q080 1
+-#define PICO_FLASH_SPI_CLKDIV 2
+-#define PICO_FLASH_SIZE_BYTES (16 * 1024 * 1024)
+-
+-// All boards have at least the B1 revision
+-#define PICO_RP2040_B0_SUPPORTED 0
+-
+-#endif

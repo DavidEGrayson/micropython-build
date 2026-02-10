@@ -1,0 +1,36 @@
+diff --git a/src/boards/include/boards/pico.h b/src/boards/include/boards/pico.h
+index 800feb3..2640f14 100644
+--- a/src/boards/include/boards/pico.h
++++ b/src/boards/include/boards/pico.h
+@@ -94,4 +94,7 @@
+ #define PICO_VSYS_PIN 29
+ #endif
+ 
++// Use the new max speed of 200 MHz
++#define SYS_CLK_MHZ 200
++
+ #endif
+diff --git a/src/boards/include/boards/pololu_3pi_2040_robot.h b/src/boards/include/boards/pololu_3pi_2040_robot.h
+index 53e0db4..bd0da55 100644
+--- a/src/boards/include/boards/pololu_3pi_2040_robot.h
++++ b/src/boards/include/boards/pololu_3pi_2040_robot.h
+@@ -26,4 +26,7 @@
+ // All boards have at least the B1 revision
+ #define PICO_RP2040_B0_SUPPORTED 0
+ 
++// Use the new max speed of 200 MHz
++#define SYS_CLK_MHZ 200
++
+ #endif
+diff --git a/src/boards/include/boards/pololu_zumo_2040_robot.h b/src/boards/include/boards/pololu_zumo_2040_robot.h
+index 756b45a..6eada69 100644
+--- a/src/boards/include/boards/pololu_zumo_2040_robot.h
++++ b/src/boards/include/boards/pololu_zumo_2040_robot.h
+@@ -26,4 +26,7 @@
+ // All boards have at least the B1 revision
+ #define PICO_RP2040_B0_SUPPORTED 0
+ 
++// Use the new max speed of 200 MHz
++#define SYS_CLK_MHZ 200
++
+ #endif

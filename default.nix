@@ -38,12 +38,21 @@ let
 
        # Change the Pico firmware to use a 1MB USB Mass Storage filesystem.
       ./pico-1mb-mass-storage.patch
+
+      # Add main_menu.py support.
+      ./main-menu-py.patch
+
+      # Zumo is now supported in pico-sdk, so remove the temporary support.
+      ./supported-zumo.patch
     ];
   };
   # if rev is a commit instead of a tag, run "git describe --tags --match=v\*" to get this
   mpy_git_tag = micropython.src.version;
 
-  pico_sdk_patches = [ ];
+  pico_sdk_patches = [
+    # Increase default clock speed to the new spec
+    ./200mhz.patch
+  ];
 
   ulab_src = pkgs.fetchFromGitHub rec {
     owner = "v923z";
@@ -91,10 +100,11 @@ in rec {
     MICROPY_BOARD = "RPI_PICO";
     image_size_mb = "2";
     start_url = "https://www.raspberrypi.com/documentation/microcontrollers/pico-series.html";
-    example_code = pkgs.fetchFromGitHub {
-      owner = "pdg137";
+    example_code = pkgs.fetchFromGitHub rec {
+      owner = "pololu";
       repo = "pico-blink-demo";
-      rev = "92e56eb0498e78391e808220da9c21424685ba24";  # 2025-01-19
+      rev = "6d94a102c7290eceb53bb8dc0083a4e2c0e29a61"; # 2025-01-20
+      name = "${repo}-${rev}";
       hash = "sha256-pS9YovP8Ar+GdclhSqLHXY71eEODQYdE0Mg111LrQ/o=";
     };
   };
@@ -105,7 +115,7 @@ in rec {
     MICROPY_BOARD = "POLOLU_3PI_2040_ROBOT";
     image_size_mb = "16";
     start_url = "https://www.pololu.com/3pi/start";
-    example_code = pkgs.fetchFromGitHub {
+    example_code = pkgs.fetchFromGitHub rec {
       owner = "pololu";
       repo = "pololu-3pi-2040-robot";
       rev = "6ddb719da080c21d9d1fb03e9f92007a12848f24";  # 2024-01-16
@@ -119,7 +129,7 @@ in rec {
     MICROPY_BOARD = "POLOLU_ZUMO_2040_ROBOT";
     image_size_mb = "16";
     start_url = "https://www.pololu.com/zumo/start";
-    example_code = pkgs.fetchFromGitHub {
+    example_code = pkgs.fetchFromGitHub rec {
       owner = "pololu";
       repo = "zumo-2040-robot";
       rev = "7bf996d4aa4180349538ab3c64980621930f6623";  # 2024-01-16

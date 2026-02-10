@@ -1,8 +1,10 @@
 source $stdenv/setup
+set -xe
 
-echo "Fetching micropython $version..."
-git clone --shallow-since=2025-12-08 --branch "$version" https://github.com/micropython/micropython 2> /dev/null
+echo "Fetching micropython $rev..."
+git clone --shallow-since=2025-12-08 --branch "$rev" https://github.com/micropython/micropython
 cd micropython
+git checkout "$rev" # the initial clone gives a strange warning, so make sure we are on the right commit
 
 git rev-parse HEAD > .gitrev
 
@@ -17,4 +19,3 @@ mv micropython $out
 
 cd $out
 rm -r $(find -name .git)
-
