@@ -35,6 +35,9 @@ let
     patches = [
       ./mpy-traceback.patch
 
+      # ports/rp2/clocks_extra: Set VREG like the SDK: needed for 200 MHz.
+      ./mpy-vreg.patch
+
        # Change the Pico firmware to use a 1MB USB Mass Storage filesystem.
       ./pico-1mb-mass-storage.patch
 
